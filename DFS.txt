@@ -1,0 +1,62 @@
+#include <iostream>
+#include <omp.h>
+#include <stack>
+#include <vector>
+
+using namespace std;
+const int MAX = 100000;
+vector<int> graph[MAX];
+bool visited[MAX];
+void dfs(int node) {
+  stack<int> s;
+  s.push(node);
+  while (!s.empty()) {
+    int curr_node = s.top();
+    if (!visited[curr_node]) {
+      visited[curr_node] = true;
+      s.pop();
+      cout << curr_node << " ";
+#pragma omp parallel for
+      for (int i = 0; i < graph[curr_node].size(); i++) {
+        int adj_node = graph[curr_node][i];
+        if (!visited[adj_node]) {
+          s.push(adj_node);
+        }
+      }
+    }
+  }
+}
+int main(void) {
+  int n, m, start_node;
+  cout << "Name: Bhagvat Mutthe" << endl;
+  cout << "Roll No: BCB-76" << endl;
+  cout << "Enter No. of Nodes, No. of Edges and Starting Node of Graph:\n";
+  cin >> n >> m >> start_node;
+  // n: node,m:edges
+  cout << "Enter pair of node and edges:\n";
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    // u and v: Pair of edges
+    graph[u].push_back(v);
+    graph[v].push_back(u);
+  }
+#pragma omp parallel for
+  for (int i = 0; i < n; i++) {
+    visited[i] = false;
+  }
+  dfs(start_node);
+  return 0;
+}
+
+
+
+Name: Bhagvat Mutthe
+Roll No: BCB-76
+Enter No. of Nodes, No. of Edges and Starting Node of Graph:
+4 3 1
+Enter pair of node and edges:
+1 2
+1 3
+2 4
+1 3 2 4
